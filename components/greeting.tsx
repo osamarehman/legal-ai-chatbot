@@ -13,16 +13,25 @@ export const Greeting = () => {
         initial={{ opacity: 0, y: 10 }}
         transition={{ delay: 0.5 }}
       >
-        Hello there!
+        Welcome to LegalAI Assistant
       </motion.div>
       <motion.div
         animate={{ opacity: 1, y: 0 }}
-        className="text-xl text-zinc-500 md:text-2xl"
+        className="text-xl text-muted-foreground md:text-2xl"
         exit={{ opacity: 0, y: 10 }}
         initial={{ opacity: 0, y: 10 }}
         transition={{ delay: 0.6 }}
       >
-        How can I help you today?
+        I help you understand legal documents and concepts in plain English
+      </motion.div>
+      <motion.div
+        animate={{ opacity: 1, y: 0 }}
+        className="mt-4 text-sm text-muted-foreground"
+        exit={{ opacity: 0, y: 10 }}
+        initial={{ opacity: 0, y: 10 }}
+        transition={{ delay: 0.7 }}
+      >
+        <span className="font-medium">Note:</span> I provide general legal information only. For specific legal advice, please consult a qualified attorney.
       </motion.div>
     </div>
   );
