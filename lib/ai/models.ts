@@ -8,33 +8,33 @@ export type ChatModel = {
 
 export const chatModels: ChatModel[] = [
   // Anthropic Claude Models (Active)
-  {
-    id: "claude-sonnet",
-    name: "Claude 3.5 Sonnet",
-    description: "Best balance of intelligence, speed, and cost for legal tasks",
-  },
-  {
-    id: "claude-opus",
-    name: "Claude 3 Opus",
-    description: "Most capable model for complex legal analysis and reasoning",
-  },
-  {
-    id: "claude-haiku",
-    name: "Claude 3.5 Haiku",
-    description: "Fast and efficient for quick legal queries",
-  },
+  // {
+  //   id: "claude-sonnet",
+  //   name: "Claude 3.5 Sonnet",
+  //   description: "Best balance of intelligence, speed, and cost for legal tasks",
+  // },
+  // {
+  //   id: "claude-opus",
+  //   name: "Claude 3 Opus",
+  //   description: "Most capable model for complex legal analysis and reasoning",
+  // },
+  // {
+  //   id: "claude-haiku",
+  //   name: "Claude 3.5 Haiku",
+  //   description: "Fast and efficient for quick legal queries",
+  // },
   
   // XAI Grok Models (Optional)
-  // {
-  //   id: "chat-model",
-  //   name: "Grok Vision",
-  //   description: "Advanced multimodal model with vision and text capabilities",
-  // },
-  // {
-  //   id: "chat-model-reasoning",
-  //   name: "Grok Reasoning",
-  //   description: "Uses advanced chain-of-thought reasoning for complex problems",
-  // },
+  {
+    id: "chat-model",
+    name: "Grok Vision",
+    description: "Advanced multimodal model with vision and text capabilities",
+  },
+  {
+    id: "chat-model-reasoning",
+    name: "Grok Reasoning",
+    description: "Uses advanced chain-of-thought reasoning for complex problems",
+  },
   
   // OpenAI Models (Commented - uncomment when enabled in providers.ts)
   // {
