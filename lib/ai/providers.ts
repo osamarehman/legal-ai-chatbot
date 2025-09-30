@@ -1,4 +1,4 @@
-import { anthropic } from "@ai-sdk/anthropic";
+import { createAnthropic } from "@ai-sdk/anthropic";
 import { gateway } from "@ai-sdk/gateway";
 import {
   customProvider,
@@ -7,9 +7,19 @@ import {
 } from "ai";
 import { isTestEnvironment } from "../constants";
 
+// Configure Anthropic with API key
+const anthropic = createAnthropic({
+  apiKey: process.env.ANTHROPIC_API_KEY,
+});
+
 // Alternative provider imports (uncomment to enable):
-// import { openai } from "@ai-sdk/openai";
+// import { createOpenAI } from "@ai-sdk/openai";
 // import { createOpenRouter } from "@ai-sdk/openrouter";
+
+// For OpenAI (uncomment to enable):
+// const openai = createOpenAI({
+//   apiKey: process.env.OPENAI_API_KEY,
+// });
 
 // For OpenRouter (uncomment to enable):
 // const openrouter = createOpenRouter({
@@ -36,7 +46,7 @@ export const myProvider = isTestEnvironment
   : customProvider({
       languageModels: {
         // Anthropic Claude Models (Active)
-        "claude-sonnet": anthropic("claude-4-5-sonnet-20250929"),
+        "claude-sonnet": anthropic("claude-3-5-sonnet-20241022"),
         "claude-haiku": anthropic("claude-3-5-haiku-20241022"),
         "claude-opus": anthropic("claude-3-opus-20240229"),
         
