@@ -98,16 +98,27 @@ pnpm dev
 Required variables in `.env`:
 
 ```bash
+# Authentication
+AUTH_SECRET="your-auth-secret"
+
+# AI Provider - Anthropic Claude (Active)
+ANTHROPIC_API_KEY="your-anthropic-key"
+
 # Database
 POSTGRES_URL="your-postgres-connection-string"
 
-# AI Provider (choose one or more)
-OPENAI_API_KEY="your-openai-key"
-ANTHROPIC_API_KEY="your-anthropic-key"
-
-# Authentication
-AUTH_SECRET="your-auth-secret"
+# Optional: Additional AI Providers
+# Uncomment models in lib/ai/providers.ts and add keys:
+# OPENAI_API_KEY="your-openai-key"
+# OPENROUTER_API_KEY="your-openrouter-key"
+# AI_GATEWAY_API_KEY="your-gateway-key" (for XAI Grok models)
 ```
+
+### Getting API Keys
+
+- **Anthropic (Claude)**: https://console.anthropic.com/
+- **OpenAI**: https://platform.openai.com/api-keys (optional)
+- **OpenRouter**: https://openrouter.ai/keys (optional, access 100+ models with one key)
 
 ## Customization
 
