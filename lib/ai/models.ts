@@ -1,4 +1,4 @@
-export const DEFAULT_CHAT_MODEL: string = "claude-sonnet";
+export const DEFAULT_CHAT_MODEL: string = "chat-model";
 
 export type ChatModel = {
   id: string;
