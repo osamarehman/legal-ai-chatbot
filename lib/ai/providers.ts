@@ -45,21 +45,16 @@ export const myProvider = isTestEnvironment
     })()
   : customProvider({
       languageModels: {
-        // Anthropic Claude Models (Active)
+        // Anthropic Claude Models via AI Gateway (Testing)
+        "chat-model": gateway.languageModel("anthropic/claude-3-5-sonnet-20241022"),
+        "chat-model-reasoning": gateway.languageModel("anthropic/claude-3-5-sonnet-20241022"),
+        "title-model": gateway.languageModel("anthropic/claude-3-5-haiku-20241022"),
+        "artifact-model": gateway.languageModel("anthropic/claude-3-5-sonnet-20241022"),
+        
+        // Direct Anthropic Models (Fallback - for model selector)
         "claude-sonnet": anthropic("claude-3-5-sonnet-20241022"),
         "claude-haiku": anthropic("claude-3-5-haiku-20241022"),
         "claude-opus": anthropic("claude-3-opus-20240229"),
-        
-        // XAI Grok Models (Kept for compatibility)
-        "chat-model": gateway.languageModel("xai/grok-2-vision-1212"),
-        "chat-model-reasoning": wrapLanguageModel({
-          model: gateway.languageModel("xai/grok-3-mini"),
-          middleware: extractReasoningMiddleware({ tagName: "think" }),
-        }),
-        
-        // Title and Artifact Generation
-        "title-model": anthropic("claude-3-5-haiku-20241022"),
-        "artifact-model": anthropic("claude-3-5-sonnet-20241022"),
         
         // OpenAI Models (Commented - uncomment to enable)
         // "gpt-4": openai("gpt-4-turbo"),
