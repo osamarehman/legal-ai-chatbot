@@ -29,11 +29,12 @@ export const myProvider = isTestEnvironment
           // OpenAI Models (Test)
           "openai/gpt-5": chatModel,
           
-          // Google Models (Test)
-          "google/gemini-2.5-flash-lite": chatModel,
-        },
-      });
-    })()
+        // Google Models (Test)
+        "google/gemini-2.5-flash-lite": chatModel,
+        "google/gemini-2.5-flash-image-preview": chatModel,
+      },
+    });
+  })()
   : customProvider({
       languageModels: {
         // XAI Grok Models (Production)
@@ -54,5 +55,6 @@ export const myProvider = isTestEnvironment
         
         // Google Models (Production)
         "google/gemini-2.5-flash-lite": gateway.languageModel("google/gemini-2.5-flash"),
+        "google/gemini-2.5-flash-image-preview": gateway.languageModel("google/gemini-2.5-flash-image-preview"),
       },
     });

@@ -102,7 +102,7 @@ importers:
         specifier: ^16.4.5
         version: 16.6.1
       drizzle-orm:
-        specifier: ^0.34.0
+        specifier: ^0.34.1
         version: 0.34.1(@neondatabase/serverless@0.9.5)(@opentelemetry/api@1.9.0)(@types/pg@8.11.6)(@types/react@18.3.25)(@vercel/postgres@0.10.0)(postgres@3.4.7)(react@19.0.0-rc-45804af1-20241021)
       embla-carousel-react:
         specifier: ^8.6.0
@@ -137,6 +137,9 @@ importers:
       papaparse:
         specifier: ^5.5.2
         version: 5.5.3
+      pdf-parse:
+        specifier: ^1.1.1
+        version: 1.1.1
       postgres:
         specifier: ^3.4.4
         version: 3.4.7
@@ -2794,6 +2797,14 @@ packages:
   dayjs@1.11.18:
     resolution: {integrity: sha512-zFBQ7WFRvVRhKcWoUh+ZA1g2HVgUbsZm9sbddh8EC5iv93sui8DVVz1Npvz+r6meo9VKfa8NyLWBsQK1VvIKPA==}
 
+  debug@3.2.7:
+    resolution: {integrity: sha512-CFjzYYAi4ThfiQvizrFQevTTXHtnCqWfe7x1AhgEscTz6ZbLbfoLRLPugTQyBth6f8ZERVUSyWHFD/7Wu4t1XQ==}
+    peerDependencies:
+      supports-color: '*'
+    peerDependenciesMeta:
+      supports-color:
+        optional: true
+
   debug@4.4.3:
     resolution: {integrity: sha512-RGwwWnwQvkVfavKVt22FGLw+xYSdzARwm0ru6DhTVA3umU5hZc28V3kO4stgYryrTlLpuvgI9GiijltAjNbcqA==}
     engines: {node: '>=6.0'}
@@ -3561,6 +3572,9 @@ packages:
       sass:
         optional: true
 
+  node-ensure@0.0.0:
+    resolution: {integrity: sha512-DRI60hzo2oKN1ma0ckc6nQWlHU69RH6xN0sjQTjMpChPfTYvKZdcQFfdYK2RWbJcKyUizSIy/l8OTGxMAM1QDw==}
+
   node-gyp-build@4.8.4:
     resolution: {integrity: sha512-LA4ZjwlnUblHVgq0oBF3Jl/6h/Nvs5fzBLwdEF4nuxnFdsfajde4WfxtJr3CaiH+F6ewcIB/q4jQ4UzPyid+CQ==}
     hasBin: true
@@ -3612,6 +3626,10 @@ packages:
   pathval@2.0.1:
     resolution: {integrity: sha512-//nshmD55c46FuFw26xV/xFAaB5HF9Xdap7HJBBnrKdAd6/GxDBaNA1870O79+9ueg61cZLSVc+OaFlfmObYVQ==}
     engines: {node: '>= 14.16'}
+
+  pdf-parse@1.1.1:
+    resolution: {integrity: sha512-v6ZJ/efsBpGrGGknjtq9J/oC8tZWq0KWL5vQrk2GlzLEQPUDB1ex+13Rmidl1neNN358Jn9EHZw5y07FFtaC7A==}
+    engines: {node: '>=6.8.1'}
 
   pg-int8@1.0.1:
     resolution: {integrity: sha512-WCtabS6t3c8SkpDBUlb1kjOs7l66xsGdKpIPZsg4wR+B3+u9UAum2odSsF9tnvxg80h4ZxLWMy4pRjOsFIqQpw==}
@@ -6677,6 +6695,10 @@ snapshots:
 
   dayjs@1.11.18: {}
 
+  debug@3.2.7:
+    dependencies:
+      ms: 2.1.3
+
   debug@4.4.3:
     dependencies:
       ms: 2.1.3
@@ -7680,6 +7702,8 @@ snapshots:
       - '@babel/core'
       - babel-plugin-macros
 
+  node-ensure@0.0.0: {}
+
   node-gyp-build@4.8.4: {}
 
   nypm@0.6.2:
@@ -7738,6 +7762,13 @@ snapshots:
   pathe@2.0.3: {}
 
   pathval@2.0.1: {}
+
+  pdf-parse@1.1.1:
+    dependencies:
+      debug: 3.2.7
+      node-ensure: 0.0.0
+    transitivePeerDependencies:
+      - supports-color
 
   pg-int8@1.0.1: {}
 

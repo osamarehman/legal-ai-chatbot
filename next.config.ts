@@ -11,6 +11,22 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  webpack: (config, { isServer }) => {
+    if (isServer) {
+      config.externals = config.externals || [];
+      config.externals.push({
+        'canvas': 'commonjs canvas',
+      });
+    }
+    // Exclude pdf-parse test files from bundling
+    config.module = config.module || {};
+    config.module.rules = config.module.rules || [];
+    config.module.rules.push({
+      test: /\.pdf$/,
+      type: 'asset/resource',
+    });
+    return config;
+  },
 };
 
 export default nextConfig;

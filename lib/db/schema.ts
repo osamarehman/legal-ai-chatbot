@@ -171,3 +171,21 @@ export const stream = pgTable(
 );
 
 export type Stream = InferSelectModel<typeof stream>;
+
+export const processedFile = pgTable("ProcessedFile", {
+  id: uuid("id").primaryKey().notNull().defaultRandom(),
+  fileHash: varchar("fileHash", { length: 64 }).notNull().unique(),
+  fileName: text("fileName").notNull(),
+  fileType: varchar("fileType", { length: 50 }).notNull(),
+  contentType: varchar("contentType", { length: 100 }).notNull(),
+  extractedContent: text("extractedContent"),
+  metadata: jsonb("metadata").$type<{
+    size?: number;
+    pageCount?: number;
+    error?: string;
+  } | null>(),
+  createdAt: timestamp("createdAt").notNull().defaultNow(),
+  expiresAt: timestamp("expiresAt"),
+});
+
+export type ProcessedFile = InferSelectModel<typeof processedFile>;

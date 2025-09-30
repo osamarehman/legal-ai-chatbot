@@ -206,9 +206,9 @@ function PureMultimodalInput({
     [usage]
   );
 
-  const handleFileChange = useCallback(
-    async (event: ChangeEvent<HTMLInputElement>) => {
-      const files = Array.from(event.target.files || []);
+  const processFiles = useCallback(
+    async (files: File[]) => {
+      if (files.length === 0) return;
 
       setUploadQueue(files.map((file) => file.name));
 
@@ -225,11 +225,20 @@ function PureMultimodalInput({
         ]);
       } catch (error) {
         console.error("Error uploading files!", error);
+        toast.error("Error uploading files. Please try again.");
       } finally {
         setUploadQueue([]);
       }
     },
     [setAttachments, uploadFile]
+  );
+
+  const handleFileChange = useCallback(
+    async (event: ChangeEvent<HTMLInputElement>) => {
+      const files = Array.from(event.target.files || []);
+      await processFiles(files);
+    },
+    [processFiles]
   );
 
   return (
@@ -265,42 +274,65 @@ function PureMultimodalInput({
         }}
       >
         {(attachments.length > 0 || uploadQueue.length > 0) && (
-          <div
-            className="flex flex-row items-end gap-2 overflow-x-scroll"
-            data-testid="attachments-preview"
-          >
-            {attachments.map((attachment) => (
-              <PreviewAttachment
-                attachment={attachment}
-                key={attachment.url}
-                onRemove={() => {
-                  setAttachments((currentAttachments) =>
-                    currentAttachments.filter((a) => a.url !== attachment.url)
-                  );
-                  if (fileInputRef.current) {
-                    fileInputRef.current.value = "";
-                  }
-                }}
-              />
-            ))}
+          <>
+            <div
+              className="flex flex-row items-end gap-2 overflow-x-scroll"
+              data-testid="attachments-preview"
+            >
+              {attachments.map((attachment) => (
+                <PreviewAttachment
+                  attachment={attachment}
+                  key={attachment.url}
+                  onRemove={() => {
+                    setAttachments((currentAttachments) =>
+                      currentAttachments.filter((a) => a.url !== attachment.url)
+                    );
+                    if (fileInputRef.current) {
+                      fileInputRef.current.value = "";
+                    }
+                  }}
+                />
+              ))}
 
-            {uploadQueue.map((filename) => (
-              <PreviewAttachment
-                attachment={{
-                  url: "",
-                  name: filename,
-                  contentType: "",
-                }}
-                isUploading={true}
-                key={filename}
-              />
-            ))}
-          </div>
+              {uploadQueue.map((filename) => (
+                <PreviewAttachment
+                  attachment={{
+                    url: "",
+                    name: filename,
+                    contentType: "",
+                  }}
+                  isUploading={true}
+                  key={filename}
+                />
+              ))}
+            </div>
+            {attachments.some((a) =>
+              a.contentType === "application/pdf" ||
+              a.contentType.startsWith("image/")
+            ) && status === "ready" && (
+              <div className="flex items-center gap-2 rounded-lg bg-primary/10 px-3 py-2 text-primary text-sm">
+                <svg className="size-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span>File will be processed when you send your message</span>
+              </div>
+            )}
+            {(status === "submitted" || status === "streaming") && (
+              <div className="flex items-center gap-2 rounded-lg bg-accent/20 px-3 py-2 text-sm text-foreground">
+                <svg className="size-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span>{status === "submitted" ? "Processing your request..." : "AI is responding..."}</span>
+              </div>
+            )}
+          </>
         )}
         <div className="flex flex-row items-start gap-1 sm:gap-2">
           <PromptInputTextarea
             autoFocus
-            className="grow resize-none border-0! border-none! bg-transparent p-2 text-sm outline-none ring-0 [-ms-overflow-style:none] [scrollbar-width:none] placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 [&::-webkit-scrollbar]:hidden"
+            className="grow resize-none border-0! border-none! bg-transparent p-2 text-base outline-none ring-0 [-ms-overflow-style:none] [scrollbar-width:none] placeholder:text-muted-foreground/70 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 [&::-webkit-scrollbar]:hidden"
             data-testid="multimodal-input"
             disableAutoResize={true}
             maxHeight={200}

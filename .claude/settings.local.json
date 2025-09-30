@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsx:*)",
+      "Bash(cat:*)",
+      "Bash(pnpm add:*)",
+      "Bash(curl:*)",
+      "Bash(pnpm run dev:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

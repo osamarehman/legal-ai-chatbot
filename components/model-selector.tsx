@@ -2,6 +2,7 @@
 
 import type { Session } from "next-auth";
 import { startTransition, useMemo, useOptimistic, useState } from "react";
+import { toast } from "sonner";
 import { saveChatModelAsCookie } from "@/app/(chat)/actions";
 import { Button } from "@/components/ui/button";
 import {
@@ -38,7 +39,7 @@ export function ModelSelector({
     () =>
       availableChatModels.find(
         (chatModel) => chatModel.id === optimisticModelId
-      ),
+      ) || availableChatModels[0], // Fallback to first available model
     [optimisticModelId, availableChatModels]
   );
 
@@ -76,9 +77,16 @@ export function ModelSelector({
               onSelect={() => {
                 setOpen(false);
 
-                startTransition(() => {
-                  setOptimisticModelId(id);
-                  saveChatModelAsCookie(id);
+                startTransition(async () => {
+                  try {
+                    setOptimisticModelId(id);
+                    await saveChatModelAsCookie(id);
+                  } catch (error) {
+                    console.error("Failed to save model selection:", error);
+                    toast.error("Failed to change model. Please try again.");
+                    // Revert to previous model on error
+                    setOptimisticModelId(selectedModelId);
+                  }
                 });
               }}
             >

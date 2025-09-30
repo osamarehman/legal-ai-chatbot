@@ -41,6 +41,7 @@ import { ChatSDKError } from "@/lib/errors";
 import type { ChatMessage } from "@/lib/types";
 import type { AppUsage } from "@/lib/usage";
 import { convertToUIMessages, generateUUID } from "@/lib/utils";
+import { processFile, isSupportedFileType } from "@/lib/files/processor";
 import { generateTitleFromUserMessage } from "../../actions";
 import { type PostRequestBody, postRequestBodySchema } from "./schema";
 
@@ -90,7 +91,8 @@ export async function POST(request: Request) {
   try {
     const json = await request.json();
     requestBody = postRequestBodySchema.parse(json);
-  } catch (_) {
+  } catch (error) {
+    console.error("Request body validation error:", error);
     return new ChatSDKError("bad_request:api").toResponse();
   }
 
@@ -144,7 +146,68 @@ export async function POST(request: Request) {
     }
 
     const messagesFromDb = await getMessagesByChatId({ id });
-    const uiMessages = [...convertToUIMessages(messagesFromDb), message];
+    console.log(`💾 Loaded ${messagesFromDb.length} messages from database for chat ${id}`);
+    
+    // Process file attachments (PDF, images) before creating the message
+    let processedMessage = message;
+    
+    // Check if the message has file parts that need processing
+    const fileParts = message.parts.filter((part): part is Extract<typeof part, { type: "file" }> => 
+      part.type === "file"
+    );
+
+    if (fileParts.length > 0) {
+      console.log(`📄 Found ${fileParts.length} file(s) to process`);
+      const additionalTextParts: Array<{ type: "text"; text: string }> = [];
+
+      for (const part of fileParts) {
+        try {
+          // Extract file metadata - using correct property names
+          const url = (part as any).url || (part as any).data;
+          const mimeType = (part as any).mediaType || (part as any).mimeType || "";
+          const fileName = (part as any).name || "document";
+
+          console.log(`🔍 File part:`, { url, mimeType, fileName });
+
+          // Only process supported file types (PDFs and images)
+          if (url && isSupportedFileType(mimeType)) {
+            console.log(`✅ Supported file type, fetching and processing...`);
+            // Fetch the file
+            const response = await fetch(url);
+            const arrayBuffer = await response.arrayBuffer();
+            const buffer = Buffer.from(arrayBuffer);
+
+            console.log(`📝 Processing ${fileName} (${mimeType}), size: ${buffer.length} bytes`);
+            const result = await processFile(buffer, fileName, mimeType);
+
+            if (result.success && result.extractedContent) {
+              console.log(`✅ Successfully extracted ${result.extractedContent.length} characters from ${fileName}`);
+              // Add the extracted content as a text part
+              additionalTextParts.push({
+                type: "text",
+                text: `\n\n[Content extracted from ${fileName}]:\n${result.extractedContent}`,
+              });
+            } else if (!result.success) {
+              console.warn(`❌ Failed to process ${fileName}:`, result.error);
+            }
+          } else {
+            console.log(`⏭️ Skipping unsupported file type: ${mimeType}`);
+          }
+        } catch (error) {
+          console.error("❌ Error processing attachment:", error);
+        }
+      }
+
+      // Add extracted content to the message
+      if (additionalTextParts.length > 0) {
+        processedMessage = {
+          ...message,
+          parts: [...message.parts, ...additionalTextParts],
+        };
+      }
+    }
+
+    const uiMessages = [...convertToUIMessages(messagesFromDb), processedMessage];
 
     const { longitude, latitude, city, country } = geolocation(request);
 
@@ -159,14 +222,15 @@ export async function POST(request: Request) {
       messages: [
         {
           chatId: id,
-          id: message.id,
+          id: processedMessage.id,
           role: "user",
-          parts: message.parts,
+          parts: processedMessage.parts,
           attachments: [],
           createdAt: new Date(),
         },
       ],
     });
+    console.log(`✅ Saved user message to database for chat ${id}`);
 
     const streamId = generateUUID();
     await createStreamId({ streamId, chatId: id });
@@ -179,7 +243,7 @@ export async function POST(request: Request) {
           model: myProvider.languageModel(selectedChatModel),
           system: systemPrompt({ selectedChatModel, requestHints }),
           messages: convertToModelMessages(uiMessages),
-          stopWhen: stepCountIs(5),
+          stopWhen: stepCountIs(10), // Increased from 5 to 10 to allow longer responses
           experimental_activeTools:
             selectedChatModel === "chat-model-reasoning"
               ? []
@@ -203,7 +267,11 @@ export async function POST(request: Request) {
             isEnabled: isProductionEnvironment,
             functionId: "stream-text",
           },
-          onFinish: async ({ usage }) => {
+          onFinish: async ({ usage, finishReason }) => {
+            // Log if response was truncated
+            if (finishReason === "unknown" || finishReason === "error") {
+              console.warn("Response may have encountered an issue:", finishReason);
+            }
             try {
               const providers = await getTokenlensCatalog();
               const modelId =
@@ -257,6 +325,7 @@ export async function POST(request: Request) {
             chatId: id,
           })),
         });
+        console.log(`✅ Saved ${messages.length} AI response message(s) to database for chat ${id}`);
 
         if (finalMergedUsage) {
           try {
@@ -269,8 +338,9 @@ export async function POST(request: Request) {
           }
         }
       },
-      onError: () => {
-        return "Oops, an error occurred!";
+      onError: (error) => {
+        console.error("Stream error:", error);
+        return "An error occurred while generating the response. Please try again.";
       },
     });
 

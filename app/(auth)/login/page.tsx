@@ -29,14 +29,18 @@ export default function Page() {
     if (state.status === "failed") {
       toast({
         type: "error",
-        description: "Invalid credentials!",
+        description: "Invalid email or password. Please check your credentials and try again.",
       });
     } else if (state.status === "invalid_data") {
       toast({
         type: "error",
-        description: "Failed validating your submission!",
+        description: "Please provide a valid email address and password.",
       });
     } else if (state.status === "success") {
+      toast({
+        type: "success",
+        description: "Signed in successfully! Welcome back!",
+      });
       setIsSuccessful(true);
       updateSession();
       router.refresh();

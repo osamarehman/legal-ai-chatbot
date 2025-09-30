@@ -126,15 +126,15 @@ const PurePreviewMessage = ({
                   <div key={key}>
                     <MessageContent
                       className={cn({
-                        "w-fit break-words rounded-2xl px-3 py-2 text-right text-white":
+                        "w-fit break-words rounded-2xl px-4 py-2.5 text-right text-primary-foreground text-base":
                           message.role === "user",
-                        "bg-transparent px-0 py-0 text-left":
+                        "bg-transparent px-0 py-0 text-left text-base":
                           message.role === "assistant",
                       })}
                       data-testid="message-content"
                       style={
                         message.role === "user"
-                          ? { backgroundColor: "#006cff" }
+                          ? { backgroundColor: "hsl(var(--user-message-bg))" }
                           : undefined
                       }
                     >
@@ -326,7 +326,7 @@ export const ThinkingMessage = () => {
         </div>
 
         <div className="flex w-full flex-col gap-2 md:gap-4">
-          <div className="p-0 text-muted-foreground text-sm">
+          <div className="p-0 text-muted-foreground text-base">
             <LoadingText>Thinking...</LoadingText>
           </div>
         </div>

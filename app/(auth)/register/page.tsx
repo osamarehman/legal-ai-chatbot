@@ -26,16 +26,22 @@ export default function Page() {
 
   useEffect(() => {
     if (state.status === "user_exists") {
-      toast({ type: "error", description: "Account already exists!" });
+      toast({ 
+        type: "error", 
+        description: "An account with this email already exists. Please sign in instead." 
+      });
     } else if (state.status === "failed") {
-      toast({ type: "error", description: "Failed to create account!" });
+      toast({ 
+        type: "error", 
+        description: "Failed to create account. Please check your connection and try again." 
+      });
     } else if (state.status === "invalid_data") {
       toast({
         type: "error",
-        description: "Failed validating your submission!",
+        description: "Please provide a valid email address and password (minimum 8 characters).",
       });
     } else if (state.status === "success") {
-      toast({ type: "success", description: "Account created successfully!" });
+      toast({ type: "success", description: "Account created successfully! Welcome!" });
 
       setIsSuccessful(true);
       updateSession();

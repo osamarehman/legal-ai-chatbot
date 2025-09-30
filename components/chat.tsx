@@ -146,6 +146,7 @@ export function Chat({
 
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const isArtifactVisible = useArtifactSelector((state) => state.isVisible);
+  const [isDragging, setIsDragging] = useState(false);
 
   useAutoResume({
     autoResume,
@@ -154,9 +155,104 @@ export function Chat({
     setMessages,
   });
 
+  const handleDragEnter = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    // Only set dragging to false if we're leaving the main container
+    if (e.currentTarget === e.target) {
+      setIsDragging(false);
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const uploadFile = async (file: File) => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const response = await fetch("/api/files/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const { url, pathname, contentType } = data;
+
+        return {
+          url,
+          name: pathname,
+          contentType,
+        };
+      }
+      const { error } = await response.json();
+      toast({ type: "error", description: error });
+    } catch (_error) {
+      toast({ type: "error", description: "Failed to upload file, please try again!" });
+    }
+  };
+
+  const handleDrop = async (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    if (isReadonly) return;
+
+    const files = Array.from(e.dataTransfer.files);
+    if (files.length === 0) return;
+
+    try {
+      const uploadPromises = files.map((file) => uploadFile(file));
+      const uploadedAttachments = await Promise.all(uploadPromises);
+      const successfullyUploadedAttachments = uploadedAttachments.filter(
+        (attachment) => attachment !== undefined
+      );
+
+      setAttachments((currentAttachments) => [
+        ...currentAttachments,
+        ...successfullyUploadedAttachments,
+      ]);
+    } catch (error) {
+      console.error("Error uploading files!", error);
+      toast({ type: "error", description: "Error uploading files. Please try again." });
+    }
+  };
+
   return (
     <>
-      <div className="overscroll-behavior-contain flex h-dvh min-w-0 touch-pan-y flex-col bg-background">
+      <div
+        className="overscroll-behavior-contain flex h-dvh min-w-0 touch-pan-y flex-col bg-background relative"
+        onDragEnter={handleDragEnter}
+        onDragLeave={handleDragLeave}
+        onDragOver={handleDragOver}
+        onDrop={handleDrop}
+      >
+        {isDragging && !isReadonly && (
+          <div className="absolute inset-0 z-50 flex items-center justify-center bg-primary/10 backdrop-blur-sm">
+            <div className="flex flex-col items-center gap-3 rounded-xl bg-background/90 p-8 shadow-lg">
+              <div className="flex size-16 items-center justify-center rounded-full bg-primary/20">
+                <svg className="size-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                </svg>
+              </div>
+              <p className="font-semibold text-lg text-primary">Drop files here to upload</p>
+              <p className="text-muted-foreground text-sm">
+                Supports: JPEG, PNG, WebP, PDF, DOC, DOCX
+              </p>
+            </div>
+          </div>
+        )}
         <ChatHeader
           chatId={id}
           isReadonly={isReadonly}
