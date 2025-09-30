@@ -2,7 +2,7 @@ import { z } from "zod";
 
 const textPartSchema = z.object({
   type: z.enum(["text"]),
-  text: z.string().min(1).max(2000),
+  text: z.string().min(1).max(100000), // Increased to 100k to support PDF content extraction
 });
 
 const filePartSchema = z.object({
@@ -16,7 +16,7 @@ const filePartSchema = z.object({
     "application/msword",
     "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
   ]),
-  name: z.string().min(1).max(100),
+  filename: z.string().min(1).max(200),
   url: z.string().url(),
 });
 

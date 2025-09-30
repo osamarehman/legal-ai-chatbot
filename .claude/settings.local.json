@@ -5,7 +5,8 @@
       "Bash(cat:*)",
       "Bash(pnpm add:*)",
       "Bash(curl:*)",
-      "Bash(pnpm run dev:*)"
+      "Bash(pnpm run dev:*)",
+      "Bash(pnpm remove:*)"
     ],
     "deny": [],
     "ask": []

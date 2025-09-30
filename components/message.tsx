@@ -110,6 +110,11 @@ const PurePreviewMessage = ({
             const { type } = part;
             const key = `message-${message.id}-part-${index}`;
 
+            // Debug logging
+            if (message.role === "user") {
+              console.log(`🔍 Message part ${index}:`, { type, hasText: 'text' in part, text: 'text' in part ? (part as any).text?.substring(0, 50) : 'N/A' });
+            }
+
             if (type === "reasoning" && part.text?.trim().length > 0) {
               return (
                 <MessageReasoning
