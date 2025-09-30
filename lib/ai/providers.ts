@@ -36,7 +36,7 @@ export const myProvider = isTestEnvironment
   : customProvider({
       languageModels: {
         // Anthropic Claude Models (Active)
-        "claude-sonnet": anthropic("claude-3-5-sonnet-20241022"),
+        "claude-sonnet": anthropic("claude-4-5-sonnet-20250929"),
         "claude-haiku": anthropic("claude-3-5-haiku-20241022"),
         "claude-opus": anthropic("claude-3-opus-20240229"),
         
