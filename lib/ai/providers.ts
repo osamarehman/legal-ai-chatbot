@@ -21,14 +21,17 @@ export const myProvider = isTestEnvironment
           "chat-model-reasoning": reasoningModel,
           "title-model": titleModel,
           "artifact-model": artifactModel,
-          
+
           // Anthropic Claude Models (Test)
           "anthropic/claude-sonnet-4": chatModel,
           "anthropic/claude-sonnet-4.5": chatModel,
-          
+
+          // Legacy model ID fallback for backward compatibility
+          "claude-sonnet": chatModel,
+
           // OpenAI Models (Test)
           "openai/gpt-5": chatModel,
-          
+
         // Google Models (Test)
         "google/gemini-2.5-flash-lite": chatModel,
         "google/gemini-2.5-flash-image-preview": chatModel,
@@ -45,10 +48,13 @@ export const myProvider = isTestEnvironment
         }),
         "title-model": gateway.languageModel("xai/grok-4"),
         "artifact-model": gateway.languageModel("xai/grok-4"),
-        
+
         // Anthropic Claude Models (Production)
         "anthropic/claude-sonnet-4": gateway.languageModel("anthropic/claude-sonnet-4-20250514"),
         "anthropic/claude-sonnet-4.5": gateway.languageModel("anthropic/claude-sonnet-4-5-20250928"),
+
+        // Legacy model ID fallback for backward compatibility
+        "claude-sonnet": gateway.languageModel("anthropic/claude-sonnet-4-20250514"),
         
         // OpenAI Models (Production)
         "openai/gpt-5": gateway.languageModel("openai/gpt-5"),
